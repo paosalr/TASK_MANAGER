@@ -1,4 +1,4 @@
-const db = require('../firebase');
+const db = require('../config/firebase');
 
 class User {
   static async create(userData) {
