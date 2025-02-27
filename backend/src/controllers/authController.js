@@ -4,7 +4,7 @@ const User = require('../models/User');
 
 exports.register = async (req, res) => {
   try {
-    const { email, username, password } = req.body;
+    const { email, username, password, role = 'employee' } = req.body;
 
     // Validar campos vacíos
     if (!email || !username || !password) {
@@ -19,11 +19,11 @@ exports.register = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     //Crear al usuario en Base de datos Firebase
-    const userId = await User.create({ email, username, password: hashedPassword });
+    const userId = await User.create({ email, username, password: hashedPassword, role });
 
     res.status(201).json({ message: 'Usuario ya registrado', userId });
   } catch (error) {
-    console.error('Error in register:', error);
+    console.error('Error en registro:', error);
     res.status(500).json({ message: 'Error del servidor' });
   }
 };
@@ -38,7 +38,7 @@ exports.login = async (req, res) => {
     }
 
     //Token 
-    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '15m' });
+    const token = jwt.sign({ userId: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '15m' });
 
     res.json({
       token,
@@ -46,6 +46,7 @@ exports.login = async (req, res) => {
         id: user.id,
         email: user.email,
         username: user.username,
+        role: user.role,
       },
     });
   } catch (error) {
@@ -53,3 +54,22 @@ exports.login = async (req, res) => {
     res.status(500).json({ message: 'Error en el servidor' });
   }
 };
+
+exports.changeRole = async (req, res) => {
+  try {
+    const { userId, newRole } = req.body;
+    const { role } = req.user;
+
+    if (role !== 'master') {
+      return res.status(403).json({ message: 'No tienes permiso para realizar esta acción' });
+    }
+
+    await User.updateRole(userId, newRole);
+    res.status(200).json({ message: 'Rol actualizado correctamente' });
+  } catch (error) {
+    console.error('Error al cambiar rol:', error);
+    res.status(500).json({ message: 'Error del servidor' });
+  }
+};
+
+
