@@ -1,0 +1,167 @@
+:root {
+    --color-primary: #4F2A42;
+    --color-secondary: #BFAAAF;
+    --color-background: #F5EDE6;
+    --color-text: #333;
+  }
+  
+  body {
+    background-color: var(--color-background);
+    color: var(--color-text);
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+  
+  h1, h2, h3 {
+    color: var(--color-primary);
+  }
+  
+  button {
+    background-color: var(--color-primary);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  button:hover {
+    background-color: var(--color-secondary);
+  }
+
+.task-individual {
+  background-color: var(--color-background);
+  border: 2px solid var(--color-primary);
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.task-grupal {
+  background-color: var(--color-secondary);
+  border: 2px solid var(--color-primary);
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+/* Estilos para los estados */
+.status-en-progreso {
+  color: #4F2A42;
+  background-color: #BFAAAF;
+  padding: 5px;
+  border-radius: 5px;
+}
+
+.status-terminado {
+  color: #4F2A42;
+  background-color: #A8D5BA;
+  padding: 5px;
+  border-radius: 5px;
+}
+
+.status-pausado {
+  color: #4F2A42;
+  background-color: #F5A623;
+  padding: 5px;
+  border-radius: 5px;
+}
+
+.status-revision {
+  color: #4F2A42;
+  background-color: #FF6B6B;
+  padding: 5px;
+  border-radius: 5px;
+}
+
+/* Estilos para botones */
+.button-primary {
+  background-color: var(--color-primary);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.button-primary:hover {
+  background-color: var(--color-secondary);
+}
+
+/* Estilos para modales */
+.modal-content {
+  background-color: var(--color-background);
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+  color: var(--color-primary);
+  border-bottom: 2px solid var(--color-secondary);
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+/* Estilos para el menú */
+.menu {
+  background-color: var(--color-primary);
+  color: white;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.menu-item {
+  color: white;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.menu-item:hover {
+  background-color: var(--color-secondary);
+}
+
+/* Estilos para el Kanban Board */
+.kanban-board {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  background-color: var(--color-background);
+  border-radius: 8px;
+}
+
+.kanban-column {
+  background-color: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  flex: 1;
+}
+
+.kanban-column h3 {
+  color: var(--color-primary);
+  margin-bottom: 15px;
+}
+
+/* Estilos para los botones de editar y eliminar */
+.button-link {
+  color: var(--color-primary); /* Usa el color primario definido en tus variables */
+  transition: color 0.3s ease;
+}
+
+.button-link:hover {
+  color: var(--color-secondary); /* Usa el color secundario definido en tus variables */
+}
+
+.button-link-danger {
+  color: #ff4d4f; /* Color rojo para el botón de eliminar */
+  transition: color 0.3s ease;
+}
+
+.button-link-danger:hover {
+  color: #ff7875; /* Color rojo más claro al hacer hover */
+}
