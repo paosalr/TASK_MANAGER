@@ -15,7 +15,7 @@ const getGroups = async (req, res) => {
 //Crear un nuevo grupo
 const createGroup = async (req, res) => {
     try {
-      const { name, description } = req.body;
+      const { name, description, members } = req.body;
       const { userId } = req.user;
       
       if (!name) {
@@ -26,6 +26,7 @@ const createGroup = async (req, res) => {
         name,
         description: description || '',
         createdBy: userId,
+        members: members || [], 
         createdAt: new Date().toISOString(),
       };
   
