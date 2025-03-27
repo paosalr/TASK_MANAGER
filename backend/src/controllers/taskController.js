@@ -92,9 +92,10 @@ const createTask = async (req, res) => {
 // Actualizar tarea del usuario autenticado
 const updateTask = async (req, res) => {
   try {
+
     const { id } = req.params;
     const { userId, role } = req.user;
-    const updatedTask = req.body;
+    const updatedData = req.body;
 
     const taskRef = db.collection('tasks').doc(id);
     const taskDoc = await taskRef.get();
@@ -104,43 +105,56 @@ const updateTask = async (req, res) => {
     }
 
     const taskData = taskDoc.data();
-    
-    const assignedToArray = Array.isArray(taskData.assignedTo)
-      ? taskData.assignedTo
-      : taskData.assignedTo
-        ? [taskData.assignedTo]
-        : [];
-
     if (role === 'employee') {
-      if (taskData.taskType === 'individual' && taskData.assignedTo === userId) {
-        await taskRef.update(updatedTask); // Pueden editar todos los campos
-      }
-      else if (taskData.taskType === 'grupal') {
+      if (taskData.taskType === 'individual' && taskData.userId === userId) {
+        // SOLO MODIFICAMOS ESTA PARTE PARA GARANTIZAR QUE SE GUARDEN LOS CAMBIOS
+        const updateFields = {
+          name: updatedData.name,
+          description: updatedData.description,
+          category: updatedData.category,
+          status: updatedData.status,
+          timeUntilFinish: updatedData.timeUntilFinish,
+          lastUpdated: new Date().toISOString() // Campo adicional para debug
+        };
+        
+        // Usamos set con merge para asegurar la actualización
+        await taskRef.set(updateFields, { merge: true });
+        
+      } else if (taskData.taskType === 'grupal') {
+        // MANTENEMOS EXACTAMENTE LA MISMA LÓGICA ORIGINAL PARA TAREAS GRUPALES
         const isAssigned = taskData.subtasks.some((subtask) => subtask.assignedTo === userId);
         if (isAssigned) {
           const updatedSubtasks = taskData.subtasks.map((subtask) =>
             subtask.assignedTo === userId
-              ? { ...subtask, status: updatedTask.status } // Actualizar el estado de la subtarea
+              ? { ...subtask, status: updatedData.status }
               : subtask
           );
-      
-          // Actualizar solo las subtareas en la tarea grupal
           await taskRef.update({ subtasks: updatedSubtasks });
         } else {
           return res.status(403).json({ error: 'No tienes permiso para editar esta tarea.' });
         }
       }
     } else if (role === 'admin' || role === 'master') {
-      // Admin y Master pueden editar todas las tareas sin restricciones
-      await taskRef.update(updatedTask);
+      // MANTENEMOS EXACTAMENTE LA MISMA LÓGICA ORIGINAL PARA ADMIN/MASTER
+      await taskRef.update(updatedData);
     } else {
       return res.status(403).json({ error: 'No tienes permiso para editar esta tarea.' });
     }
 
-    res.status(200).json({ message: 'Tarea actualizada correctamente' });
+    // Obtenemos la tarea actualizada para devolverla en la respuesta
+    const updatedTask = await taskRef.get();
+    
+    res.status(200).json({ 
+      message: 'Tarea actualizada correctamente',
+      task: updatedTask.data()
+    });
+    
   } catch (error) {
     console.error('Error al actualizar tarea:', error);
-    res.status(500).json({ error: 'Error al actualizar tarea' });
+    res.status(500).json({ 
+      error: 'Error al actualizar tarea',
+      details: error.message 
+    });
   }
 };
 

@@ -188,7 +188,7 @@ const DashboardPage = () => {
 
   // Función para manejar la edición de una tarea
   const handleEdit = (task) => {
-    if (!task.subtasks) {
+    {
     setCurrentTask(task); 
     setEditModalVisible(true); 
     editForm.setFieldsValue({
@@ -203,32 +203,36 @@ const DashboardPage = () => {
   const handleEditTask = async (values) => {
     try {
       if (userRole === 'employee' && currentTask?.taskType === 'grupal') {
-        const updatedSubtasks = currentTask.subtasks.map((subtask) =>
-          subtask.assignedTo === userId
-            ? { ...subtask, status: values.status }
-            : subtask
+        // Solo actualizar el status de la subtarea asignada al empleado
+        const updatedSubtasks = currentTask.subtasks.map(subtask => 
+          subtask.assignedTo === userId ? { ...subtask, status: values.status } : subtask
         );
-
-         await axios.put(
-          `http://localhost:5000/api/tasks/${currentTask.id}`,
-          { ...currentTask, subtasks: updatedSubtasks },
+        
+        await axios.put(
+          `http://localhost:5000/api/tasks/${currentTask.id}/update-subtask`,
           {
-            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-          }
+            subtaskId: currentTask.subtasks.find(st => st.assignedTo === userId)?.id,
+            
+            newStatus: values.status
+          },
+          { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
         );
+        
+        // Actualizar el estado local
+        const updatedTask = { ...currentTask, subtasks: updatedSubtasks };
+        setTasks(tasks.map(t => t.id === updatedTask.id ? updatedTask : t));
       } else {
-        // Si es admin o master, o es una tarea individual, permite editar todos los campos
+        // Para admin/master o tareas individuales de empleado
         await axios.put(
           `http://localhost:5000/api/tasks/${currentTask.id}`,
           values,
-          {
-            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-          }
+          { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
         );
       }
+      
       message.success("Tarea actualizada exitosamente");
       setEditModalVisible(false);
-      await fetchTasks();
+      await fetchTasks(); 
     } catch (error) {
       console.error("Error al actualizar tarea:", error);
       message.error("No se pudo actualizar la tarea.");

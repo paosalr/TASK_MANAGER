@@ -127,7 +127,7 @@
 
 /* Estilos para el Kanban Board */
 .kanban-board {
-  display: flex;
+  display: block;
   gap: 20px;
   padding: 20px;
   background-color: var(--color-background);

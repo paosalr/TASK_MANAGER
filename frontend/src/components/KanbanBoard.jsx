@@ -105,7 +105,6 @@ const KanbanBoard = ({ tasks, onEdit, onDelete, userRole, userId, users }) => {
                     st.id === subtask.id ? { ...st, status: value } : st
                   );
                   const updatedTask = { ...task, subtasks: updatedSubtasks };
-                  onEdit(updatedTask);  
                   message.success("Estado de la subtarea actualizado exitosamente");
                 } catch (error) {
                   console.error("Error al actualizar la subtarea:", error);
@@ -129,7 +128,7 @@ const KanbanBoard = ({ tasks, onEdit, onDelete, userRole, userId, users }) => {
                     </Collapse>
                     )}    
                     <Space>
-                    {(userRole === 'employee' && task.taskType === 'individual') && (
+                    {userRole === 'employee' && task.taskType === 'individual' && task.userId === userId && (
                       <Button
                         type="link"
                         icon={<EditOutlined />}
@@ -139,7 +138,7 @@ const KanbanBoard = ({ tasks, onEdit, onDelete, userRole, userId, users }) => {
                         Editar
                       </Button>
                       )}
-                      {userRole !== 'employee' && (
+                      {(userRole === 'admin' || userRole === 'master') && (
                         <Button
                           type="link"
                           icon={<EditOutlined />}
@@ -149,6 +148,7 @@ const KanbanBoard = ({ tasks, onEdit, onDelete, userRole, userId, users }) => {
                           Editar
                         </Button>
                       )}
+                      {(userRole !== 'employee' || (userRole === 'employee' && task.taskType === 'individual')) && (
                       <Popconfirm
                         title="¿Estás seguro de eliminar esta tarea?"
                         onConfirm={() => onDelete(task.id)}
@@ -159,6 +159,7 @@ const KanbanBoard = ({ tasks, onEdit, onDelete, userRole, userId, users }) => {
                           Eliminar
                         </Button>
                       </Popconfirm>
+                        )}
                     </Space>
                   </div>
                 )}
